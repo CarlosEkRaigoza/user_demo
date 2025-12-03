@@ -1,37 +1,59 @@
 package com.example.userDemo.repository;
 
+import com.example.userDemo.model.Direccion;
 import com.example.userDemo.model.Usuario;
-import org.springframework.data.jpa.repository.JpaRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
-/*
-Le dice a Spring: "Esta pieza de código es la encargada de hablar con la Base de Datos".
-Spring la detectará y creará una instancia (un objeto) en memoria automáticamente.
-De ahí es el Autowired que hay en el controller
-*/
+import java.util.List;
 
 @Repository
+public class UsuarioRepository {
 
-// NO es una "class". Es una "interface".
-// Significa que solo definimos "el qué" (el contrato), y Spring se encarga del "cómo" (el código real).
+    @PersistenceContext
+    private EntityManager entityManager;
 
-/*
-extends JpaRepository<Usuario, Long>:
-aquí entra la Herencia:
-Al extender de 'JpaRepository', heredamos automáticamente métodos para guardar, buscar y borrar.
-<Usuario, Long> significa:
-1. Usuario: Esta caja maneja datos de la tabla de 'Usuario'.
-2. Long: El ID de esos usuarios es de tipo número largo (Long).
- */
+    @Transactional
+    public Usuario guardar(Usuario usuario) {
+        if (usuario.getId() == null) {
+            entityManager.persist(usuario);
+        } else {
+            entityManager.merge(usuario);
+        }
 
-public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
+        if (usuario.getDirecciones() != null) {
+            for (Direccion direccionTem : usuario.getDirecciones()) {
+                direccionTem.setUsuario(usuario);
 
-    /*
-    JpaRepository ya tiene escritos los métodos:
-    // .save()
-    // .findAll()
-    // .findById()
-    // .deleteById()
-    */
+                if (direccionTem.getId() == null) {
+                    entityManager.persist(direccionTem);
+                } else {
+                    entityManager.merge(direccionTem);
+                }
+            }
+        }
 
+        return usuario;
+    }
+
+
+    public List<Usuario> buscarTodos() {
+        String sql = "SELECT u FROM Usuario u";
+        return entityManager.createQuery(sql, Usuario.class).getResultList();
+    }
+
+    @Transactional
+    public void borrar(Long id) {
+        Usuario usuario = entityManager.find(Usuario.class, id);
+
+        if (usuario != null) {
+            entityManager.remove(usuario);
+        }
+    }
+
+    public Usuario buscarPorId(Long id) {
+        return entityManager.find(Usuario.class, id);
+    }
 }

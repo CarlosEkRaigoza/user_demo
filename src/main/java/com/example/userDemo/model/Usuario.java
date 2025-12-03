@@ -1,44 +1,31 @@
 package com.example.userDemo.model;
 
 import jakarta.persistence.*;
-
+import java.util.ArrayList;
 import java.util.List;
 
-//Aquí transformamos esta clase .java en una Tabla de Base de Datos.
 @Entity
-
-//Aqui obligamos a que la tabla en la db se llame usuarios
-@Table(name= "usuarios")
-
-
 public class Usuario {
 
-    //este @Id indica que este campo (Long id) es la Llave Primaria (el DNI del registro)
     @Id
-
-    //el @GemeratedValue le dice a la db que genere el número ella misma (Auto-incremental).
-    @GeneratedValue(strategy = GenerationType.IDENTITY) //IDENTITY: Estrategia simple (1, 2, 3...).
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String nombre;
     private Long numCuenta;
     private Long numTelefono;
 
+    @OneToMany(mappedBy = "usuario")
+    private List<Direccion> direcciones = new ArrayList<>();
 
-    /* @OneToMany: Relación "Uno a Muchos". Un Usuario -> Muchas Direcciones.
-     mappedBy = "usuario": Dice "No crees una tabla intermedia, ve a la clase Direccion
-     y busca la variable 'usuario' para unirte".
-     cascade = ALL: Si borro al usuario, borra sus direcciones automáticamente
-     */
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
-    private List<Direccion> direcciones;
-
-
-
-    // OBLIGATORIO: JPA necesita esto para crear el objeto antes de rellenarlo.
     public Usuario() {
     }
 
+    public Usuario(String nombre, Long numCuenta, Long numTelefono) {
+        this.nombre = nombre;
+        this.numCuenta = numCuenta;
+        this.numTelefono = numTelefono;
+    }
 
     public Long getId() {
         return id;
@@ -56,19 +43,19 @@ public class Usuario {
         this.nombre = nombre;
     }
 
-    public Long getNumCuenta(){
+    public Long getNumCuenta() {
         return numCuenta;
     }
 
-    public void setnumCuenta(Long numCuenta) {
+    public void setNumCuenta(Long numCuenta) {
         this.numCuenta = numCuenta;
     }
 
-    public Long getnumTelefono(){
+    public Long getNumTelefono() {
         return numTelefono;
     }
 
-    public void setnumTelefono(Long numTelefono) {
+    public void setNumTelefono(Long numTelefono) {
         this.numTelefono = numTelefono;
     }
 
@@ -78,5 +65,19 @@ public class Usuario {
 
     public void setDirecciones(List<Direccion> direcciones) {
         this.direcciones = direcciones;
+        if(this.direcciones != null) {
+            for(Direccion dir : this.direcciones) {
+                dir.setUsuario(this);
+            }
+        }
+    }
+
+    // Método opcional pero muy "estudiante aplicado":
+    // Sirve para agregar una sola dirección a la lista existente
+    public void agregarDireccion(Direccion direccion) {
+        if(direccion != null) {
+            this.direcciones.add(direccion);
+            direccion.setUsuario(this);
+        }
     }
 }

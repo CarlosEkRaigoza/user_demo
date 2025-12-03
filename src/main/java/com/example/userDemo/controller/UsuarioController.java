@@ -1,85 +1,37 @@
 package com.example.userDemo.controller;
 
 import com.example.userDemo.model.Usuario;
-import com.example.userDemo.model.Direccion;
 import com.example.userDemo.repository.UsuarioRepository;
-
-//Usamos este para la inyeccion
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-/*
-Convierte esta clase en un "Controlador REST".
-Significa que sabrá responder con datos JSON (texto) en lugar de páginas HTML.
-*/
-@RestController
 
-/*
-URL: http://localhost:8080/usuarios
-*/
+@Controller
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
-    //Aquí usamos la inyeccion pq no hacemos instancia, lo hace spring
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    @GetMapping
+    public UsuarioController(UsuarioRepository usuarioRepository) {
+        this.usuarioRepository = usuarioRepository;
+    }
+
+    @RequestMapping(method = RequestMethod.GET)
+    @ResponseBody
     public List<Usuario> obtenerTodos() {
-        return usuarioRepository.findAll();
+        return usuarioRepository.buscarTodos();
     }
 
-    @PostMapping
+    @RequestMapping(method = RequestMethod.POST)
+    @ResponseBody
     public Usuario crearUsuario(@RequestBody Usuario usuario) {
-
-        if(usuario.getDirecciones() != null) {
-            for(Direccion direccion : usuario.getDirecciones()) {
-                direccion.setUsuario(usuario);
-            }
-        }
-
-        return usuarioRepository.save(usuario);
+        return usuarioRepository.guardar(usuario);
     }
 
-
-    @DeleteMapping("/{id}")
-    // Busca en la url la parte donde pusimos "{id}" y guarda ese número en la variable 'id'.
-    public String borrarUsuario(@PathVariable Long id) {
-
-        // .existsById(): Verifica si el ID existe antes de intentar borrarlo.
-        if (usuarioRepository.existsById(id)) {
-            usuarioRepository.deleteById(id);
-            return "Usuario con ID: " + id + " ha sido eliminado correctamente.";
-        } else {
-            return "Error: No se encontró el usuario con ID: " + id;
-        }
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @ResponseBody
+    public void borrarUsuario(@PathVariable Long id) {
+        usuarioRepository.borrar(id);
     }
-
-    @GetMapping("/version")
-    public String getVersion() {
-        return "Esta es la nueva version 0.0.1 :)";
-    }
-
-    /*
-    Con este pruebo el post
-
-    {
-        "nombre": "Carlos Ek",
-    "numCuenta": 12345678,
-        "numTelefono": 9999682992,
-        "direcciones": [
-            {
-                "calle": "51 Avila C",
-                "ciudad": "Merida"
-            },
-            {
-                "calle": "Circuito Colonias",
-                "ciudad": "Merida"
-            }
-        ]
-    }
-
-
-     */
 }

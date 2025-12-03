@@ -1,14 +1,11 @@
 package com.example.userDemo.model;
 
 import jakarta.persistence.*;
-
-// Importación para evitar el bucle infinito del JSON
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "direcciones")
-
 public class Direccion {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -16,28 +13,17 @@ public class Direccion {
     private String calle;
     private String ciudad;
 
-    // @ManyToOne: Relación "Muchos a Uno". Muchas calles -> un usuario.
     @ManyToOne
-
-
-
-    /* Le dice a la db: "En la tabla 'direcciones', crea una columna llamada 'usuario_id'".
-    Ahí es donde se guardará el número (ID) del dueño de la casa.
-    */
-    @JoinColumn(name = "usuario_id")
-
-
-    /*
-    Cuando Postman pida los atributos del objeto Dirección, Spring intentará mostrar al Usuario dueño.
-    Pero el Usuario tiene Direcciones, que tienen Usuario, que tiene Direcciones... (Bucle Infinito pues).
-    Esto dice: "Corta aquí. No incluyas al usuario cuando imprimas la dirección en JSON".
-     */
     @JsonIgnore
     private Usuario usuario;
 
+        public Direccion() {
+    }
 
-
-    public Direccion() {
+    public Direccion(String calle, String ciudad, Usuario usuario) {
+        this.calle = calle;
+        this.ciudad = ciudad;
+        this.usuario = usuario;
     }
 
     public Long getId() {
@@ -60,7 +46,7 @@ public class Direccion {
         return ciudad;
     }
 
-    public void setciudad(String ciudad) {
+    public void setCiudad(String ciudad) {
         this.ciudad = ciudad;
     }
 
@@ -71,5 +57,4 @@ public class Direccion {
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
-
 }
