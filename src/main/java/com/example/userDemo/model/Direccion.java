@@ -1,23 +1,17 @@
 package com.example.userDemo.model;
 
-import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-@Entity
 public class Direccion {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String calle;
     private String ciudad;
 
-    @ManyToOne
     @JsonIgnore
     private Usuario usuario;
 
-        public Direccion() {
+    public Direccion() {
     }
 
     public Direccion(String calle, String ciudad, Usuario usuario) {

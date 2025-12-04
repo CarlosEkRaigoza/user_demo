@@ -1,21 +1,15 @@
 package com.example.userDemo.model;
 
-import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
 public class Usuario {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String nombre;
     private Long numCuenta;
     private Long numTelefono;
 
-    @OneToMany(mappedBy = "usuario")
     private List<Direccion> direcciones = new ArrayList<>();
 
     public Usuario() {
@@ -65,17 +59,15 @@ public class Usuario {
 
     public void setDirecciones(List<Direccion> direcciones) {
         this.direcciones = direcciones;
-        if(this.direcciones != null) {
-            for(Direccion dir : this.direcciones) {
-                dir.setUsuario(this);
+        if (this.direcciones != null) {
+            for (Direccion direccion : this.direcciones) {
+                direccion.setUsuario(this);
             }
         }
     }
 
-    // Método opcional pero muy "estudiante aplicado":
-    // Sirve para agregar una sola dirección a la lista existente
     public void agregarDireccion(Direccion direccion) {
-        if(direccion != null) {
+        if (direccion != null) {
             this.direcciones.add(direccion);
             direccion.setUsuario(this);
         }

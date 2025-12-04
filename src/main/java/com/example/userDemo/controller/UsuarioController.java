@@ -17,16 +17,28 @@ public class UsuarioController {
         this.usuarioRepository = usuarioRepository;
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value = "/version", method = RequestMethod.GET)
     @ResponseBody
-    public List<Usuario> obtenerTodos() {
-        return usuarioRepository.buscarTodos();
+    public String version() {
+        return "si sirve";
     }
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     public Usuario crearUsuario(@RequestBody Usuario usuario) {
         return usuarioRepository.guardar(usuario);
+    }
+
+    @RequestMapping(method = RequestMethod.GET)
+    @ResponseBody
+    public List<Usuario> obtenerTodos() {
+        return usuarioRepository.buscarTodos();
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @ResponseBody
+    public void buscarPorId(@PathVariable Long id) {
+        usuarioRepository.buscarPorId(id);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
