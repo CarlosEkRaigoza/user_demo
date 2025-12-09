@@ -1,7 +1,7 @@
 package com.example.userDemo.controller;
 
 import com.example.userDemo.model.Usuario;
-import com.example.userDemo.repository.UsuarioRepository;
+import com.example.userDemo.service.UsuarioService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,10 +11,10 @@ import java.util.List;
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
-    private final UsuarioRepository usuarioRepository;
+    private final UsuarioService usuarioService;
 
-    public UsuarioController(UsuarioRepository usuarioRepository) {
-        this.usuarioRepository = usuarioRepository;
+    public UsuarioController(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
     }
 
     @RequestMapping(value = "/version", method = RequestMethod.GET)
@@ -26,24 +26,24 @@ public class UsuarioController {
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     public Usuario crearUsuario(@RequestBody Usuario usuario) {
-        return usuarioRepository.guardar(usuario);
+        return usuarioService.registrarUsuario(usuario);
     }
 
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
     public List<Usuario> obtenerTodos() {
-        return usuarioRepository.buscarTodos();
+        return usuarioService.obtenerTodos();
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
     public void buscarPorId(@PathVariable Long id) {
-        usuarioRepository.buscarPorId(id);
+        usuarioService.buscarPorId(id);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @ResponseBody
     public void borrarUsuario(@PathVariable Long id) {
-        usuarioRepository.borrar(id);
+        usuarioService.borrarUsuario(id);
     }
 }

@@ -2,7 +2,7 @@ package com.example.userDemo;
 
 import com.example.userDemo.model.Direccion;
 import com.example.userDemo.model.Usuario;
-import com.example.userDemo.repository.UsuarioRepository;
+import com.example.userDemo.service.UsuarioService;
 
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Assertions;
@@ -15,7 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 class UsuarioH2Test {
 
     @Autowired
-    private UsuarioRepository repositorio;
+    private UsuarioService service;
 
     @Test
     void testGuardarUsuarioYDirecciones() {
@@ -35,7 +35,7 @@ class UsuarioH2Test {
 
         System.out.println("ya metimos la direccion al usuario");
 
-        repositorio.guardar(usuario);
+        service.registrarUsuario(usuario);
         System.out.println("ahora metimos el usuario completo al repositorio");
 
         System.out.println("verificamos con id");
@@ -43,9 +43,9 @@ class UsuarioH2Test {
             Assertions.fail("El ID del usuario no debería ser nulo");
         }
 
-        Usuario usuarioEncontrado = repositorio.buscarPorId(usuario.getId());
+        Usuario usuarioEncontrado = service.buscarPorId(usuario.getId());
 
-        Assertions.assertEquals("CarlosRob", usuarioEncontrado.getNombre());
+        Assertions.assertEquals("CARLOSROB", usuarioEncontrado.getNombre());
         Assertions.assertEquals("Merida", usuarioEncontrado.getDirecciones().get(0).getCiudad());
 
         System.out.println("si se guardó");
@@ -70,7 +70,7 @@ class UsuarioH2Test {
         usuario.agregarDireccion(direccion);
 
         System.out.println("Guardando usuario y su direccion");
-        repositorio.guardar(usuario);
+        service.registrarUsuario(usuario);
 
         Long idUsuario = usuario.getId();
         Long idDireccion = direccion.getId();
@@ -79,14 +79,18 @@ class UsuarioH2Test {
         System.out.println("id de Dirección: " + idDireccion);
 
         System.out.println("Aquí borramos");
-        repositorio.borrar(idUsuario);
 
-            Usuario usuarioBorrado = repositorio.buscarPorId(idUsuario);
-            if (usuarioBorrado == null) {
-                System.out.println("El usuario ya no existe.");
-            } else {
-                Assertions.fail("Algo no anda bien JAJAJAJ.");
-            }
+        service.borrarUsuario(idUsuario);
+
+        try {
+            service.buscarPorId(idUsuario);
+
+            Assertions.fail("El usuario aún existe, no se borró.");
+
+        } catch (RuntimeException e) {
+            System.out.println("hay un error esperado: " + e.getMessage());
+            System.out.println("El usuario ya no existe. Prueba exitosa.");
+        }
         System.out.println("[-][-][-][-][-][-][-][-][-][-][-][-][-][-][-][-][-]");
     }
 }

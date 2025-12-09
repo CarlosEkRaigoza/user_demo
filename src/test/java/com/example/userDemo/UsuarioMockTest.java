@@ -2,8 +2,7 @@ package com.example.userDemo;
 
 import com.example.userDemo.controller.UsuarioController;
 import com.example.userDemo.model.Usuario;
-import com.example.userDemo.repository.UsuarioRepository;
-
+import com.example.userDemo.service.UsuarioService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -19,8 +18,8 @@ class UsuarioMockTest {
         System.out.println("[-][-][-][-][-][-][-][-][-][-][-][-][-][-][-][-][-]");
         System.out.println("Buscar con Mocks");
 
-        UsuarioRepository repositorioFalso = Mockito.mock(UsuarioRepository.class);
-        UsuarioController controller = new UsuarioController(repositorioFalso);
+        UsuarioService serviceFalso = Mockito.mock(UsuarioService.class);
+        UsuarioController controller = new UsuarioController(serviceFalso);
 
         List<Usuario> listaFalsa = new ArrayList<>();
         Usuario usuarioFalso = new Usuario();
@@ -28,13 +27,13 @@ class UsuarioMockTest {
         usuarioFalso.setNombre("Usuario Falso");
         listaFalsa.add(usuarioFalso);
 
-        Mockito.when(repositorioFalso.buscarTodos()).thenReturn(listaFalsa);
+        Mockito.when(serviceFalso.obtenerTodos()).thenReturn(listaFalsa);
 
         List<Usuario> resultado = controller.obtenerTodos();
 
         Assertions.assertEquals(1, resultado.size());
         Assertions.assertEquals("Usuario Falso", resultado.get(0).getNombre());
-        Mockito.verify(repositorioFalso, Mockito.times(1)).buscarTodos();
+        Mockito.verify(serviceFalso, Mockito.times(1)).obtenerTodos();
 
         System.out.println("Test Mock buscarTodos Exitoso.");
         System.out.println("[-][-][-][-][-][-][-][-][-][-][-][-][-][-][-][-][-]");
@@ -45,13 +44,13 @@ class UsuarioMockTest {
         System.out.println("[-][-][-][-][-][-][-][-][-][-][-][-][-][-][-][-][-]");
         System.out.println("Delete con Mocks");
 
-        UsuarioRepository repositorioFalso = Mockito.mock(UsuarioRepository.class);
-        UsuarioController controller = new UsuarioController(repositorioFalso);
+        UsuarioService serviceFalso = Mockito.mock(UsuarioService.class);
+        UsuarioController controller = new UsuarioController(serviceFalso);
         Long id = 500L;
 
         controller.borrarUsuario(id);
 
-        Mockito.verify(repositorioFalso, Mockito.times(1)).borrar(id);
+        Mockito.verify(serviceFalso, Mockito.times(1)).borrarUsuario(id);
         System.out.println("Test Mock Delete Exitoso.");
         System.out.println("[-][-][-][-][-][-][-][-][-][-][-][-][-][-][-][-][-]");
     }
@@ -61,8 +60,8 @@ class UsuarioMockTest {
         System.out.println("[-][-][-][-][-][-][-][-][-][-][-][-][-][-][-][-][-]");
         System.out.println("Save con Mocks)");
 
-        UsuarioRepository repositorioFalso = Mockito.mock(UsuarioRepository.class);
-        UsuarioController controller = new UsuarioController(repositorioFalso);
+        UsuarioService serviceFalso = Mockito.mock(UsuarioService.class);
+        UsuarioController controller = new UsuarioController(serviceFalso);
 
         Usuario entradaFalsa = new Usuario();
         entradaFalsa.setNombre("NuevoUsuario");
@@ -71,7 +70,7 @@ class UsuarioMockTest {
         salidaFalsa.setId(99L);
         salidaFalsa.setNombre("NuevoUsuario");
 
-        Mockito.when(repositorioFalso.guardar(entradaFalsa)).thenReturn(salidaFalsa);
+        Mockito.when(serviceFalso.registrarUsuario(entradaFalsa)).thenReturn(salidaFalsa);
 
         Usuario resultado = controller.crearUsuario(entradaFalsa);
 
